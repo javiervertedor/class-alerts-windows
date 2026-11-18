@@ -4,13 +4,13 @@ An always-on-top classroom countdown timer for Windows, by **Francisco Javier Ve
 
 ## Download and install
 
-[Download Class Alerts 1.2.0 (per-user MSI)](https://github.com/javiervertedor/class-alerts-windows/raw/refs/heads/main/downloads/ClassAlerts-1.2.0-User.msi). [SHA-256 checksum](downloads/SHA256SUMS.txt). Run it using your normal Windows account. It installs for the current user, creates Start menu and desktop shortcuts, launches the app when you click Finish, and offers an optional **Start with Windows** checkbox on the final screen.
+[Download Class Alerts 1.3.0 (per-user MSI)](https://github.com/javiervertedor/class-alerts-windows/raw/refs/heads/main/downloads/ClassAlerts-1.3.0-User.msi). [SHA-256 checksum](downloads/SHA256SUMS.txt). Run it using your normal Windows account. It installs for the current user, creates Start menu and desktop shortcuts, launches the app when you click Finish, and offers an optional **Start with Windows** checkbox on the final screen.
 
 Requires Windows with **.NET Framework 4.8**. The installer does not request administrator privileges; organisational policy can still restrict MSI installation. This release is unsigned.
 
 The timetable starts empty. Right-click the timer → **Settings** to enter your own lessons or import a CSV. Download the [CSV template](Templates/schedule-template.csv) and save edited spreadsheets as **CSV UTF-8**.
 
-[Download ZIP with instructions, AI timetable-conversion prompt and sample CSV](https://github.com/javiervertedor/class-alerts-windows/raw/refs/heads/main/downloads/ClassAlerts-1.2.0-Package.zip).
+[Download ZIP with instructions, AI timetable-conversion prompt and sample CSV](https://github.com/javiervertedor/class-alerts-windows/raw/refs/heads/main/downloads/ClassAlerts-1.3.0-Package.zip).
 
 ## Features
 

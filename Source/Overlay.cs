@@ -13,7 +13,22 @@ public class Dial : FrameworkElement {
  public Preferences Theme=new Preferences();
  public bool IsWarning;
  public static Brush Brush(string hex){return (Brush)new BrushConverter().ConvertFromString(hex);}
- public static Size DesignSize(string mode){return mode=="Round"?new Size(166,166):mode=="Bar"?new Size(278,66):new Size(170,72);}
+ public static Size DesignSize(string mode){return mode=="Round"?new Size(166,166):mode=="Bar"?new Size(278,66):new Size(170,112);}
+ readonly System.Diagnostics.Stopwatch scrollClock=System.Diagnostics.Stopwatch.StartNew();string scrollKey;bool scrolling;
+ public Dial(){Loaded+=delegate{CompositionTarget.Rendering+=Animate;};Unloaded+=delegate{CompositionTarget.Rendering-=Animate;};}
+ void Animate(object sender,EventArgs args){if(scrolling&&IsVisible)InvalidateVisual();}
+ public static string LimitCaption(string text){text=text??"";var info=new StringInfo(text);return info.LengthInTextElements<=50?text:info.SubstringByTextElements(0,50);}
+ FormattedText LabelText(string text,double size,Brush colour){return new FormattedText(text??"",CultureInfo.GetCultureInfo("zh-CN"),FlowDirection.LeftToRight,new Typeface(new FontFamily(Theme.FontName+", Microsoft YaHei, Microsoft JhengHei, Global User Interface"),FontStyles.Normal,Theme.Bold?FontWeights.Bold:FontWeights.Normal,FontStretches.Normal),size,colour,1.0);}
+ internal static double ScrollOffset(double elapsed,double overflow){if(overflow<=0)return 0;double travel=overflow/24.0;double phase=elapsed%(travel*2+3);if(phase<1.5)return 0;if(phase<1.5+travel)return (phase-1.5)*24;if(phase<3+travel)return overflow;return Math.Max(0,overflow-(phase-3-travel)*24);}
+ string WrapCaption(string text,double size,double width,Brush colour){var lines=new System.Text.StringBuilder();string line="";var elements=StringInfo.GetTextElementEnumerator(text);while(elements.MoveNext()){string next=elements.GetTextElement();if(line.Length>0&&LabelText(line+next,size,colour).WidthIncludingTrailingWhitespace>width){int space=line.LastIndexOf(' ');if(space>0){lines.AppendLine(line.Substring(0,space));line=line.Substring(space+1);}else{lines.AppendLine(line);line="";}}line+=next;}lines.Append(line);return lines.ToString();}
+ void CaptionText(DrawingContext dc,string text,Brush colour,Rect box,bool wrap){
+  text=LimitCaption(text);var f=LabelText(text,Theme.LabelSize,colour);
+  if(wrap){double size=Theme.LabelSize;do{f=LabelText(WrapCaption(text,size,box.Width-4,colour),size,colour);f.MaxTextWidth=box.Width;f.TextAlignment=TextAlignment.Center;if(f.Height<=box.Height-3||size<=6)break;size-=0.5;}while(true);dc.PushClip(new RectangleGeometry(box));var geometry=f.BuildGeometry(new Point(box.Left,box.Top+1));dc.DrawGeometry(null,new Pen(Brush(Theme.BorderColour),2.4){LineJoin=PenLineJoin.Round},geometry);dc.DrawGeometry(colour,null,geometry);dc.Pop();return;}
+  if(f.Height>box.Height)f.SetFontSize(Theme.LabelSize*box.Height/f.Height);
+  double overflow=Math.Max(0,f.WidthIncludingTrailingWhitespace-box.Width);scrolling|=overflow>0;
+  double x=overflow>0?box.Left-ScrollOffset(scrollClock.Elapsed.TotalSeconds,overflow):box.Left+(box.Width-f.WidthIncludingTrailingWhitespace)/2;
+  dc.PushClip(new RectangleGeometry(box));dc.DrawText(f,new Point(x,box.Top));dc.Pop();
+ }
  void Text(DrawingContext dc,string text,double size,Brush color,Rect box,bool outline){
   var face=new Typeface(new FontFamily(Theme.FontName+", Microsoft YaHei, Microsoft JhengHei, Global User Interface"),FontStyles.Normal,Theme.Bold?FontWeights.Bold:FontWeights.Normal,FontStretches.Normal);
   bool digits=text==Time;size=digits?Theme.CountdownSize:Theme.LabelSize;
@@ -23,21 +38,22 @@ public class Dial : FrameworkElement {
   if(outline){var geometry=f.BuildGeometry(box.TopLeft);dc.DrawGeometry(null,new Pen(Brush(Theme.BorderColour),2.4){LineJoin=PenLineJoin.Round},geometry);dc.DrawGeometry(color,null,geometry);}else dc.DrawText(f,box.TopLeft);
  }
  protected override void OnRender(DrawingContext dc){
+  string key=Mode+"|"+Caption+"|"+Footer+"|"+Theme.FontName+"|"+Theme.LabelSize+"|"+Theme.Bold;if(key!=scrollKey){scrollKey=key;scrollClock.Restart();}scrolling=false;
   double w=ActualWidth,h=ActualHeight;Brush accent=Brush(IsWarning?Theme.WarningColour:Theme.BorderColour),white=Brush(Theme.TextColour),muted=white,digits=Brush(IsWarning?Theme.WarningColour:Theme.TextColour);var track=accent.Clone();track.Opacity=0.25;
   if(Mode=="Round"){
    var c=new Point(w/2,h/2);double r=w/2-5;dc.DrawEllipse(Brush(Theme.FillColour),null,c,r,r);dc.DrawEllipse(null,new Pen(track,4),c,r,r);
    if(Fraction>=0.99999)dc.DrawEllipse(null,new Pen(accent,8),c,r,r);else if(Fraction>0){double a=Fraction*Math.PI*2;var g=new StreamGeometry();using(var ctx=g.Open()){ctx.BeginFigure(new Point(c.X,c.Y-r),false,false);ctx.ArcTo(new Point(c.X+r*Math.Sin(a),c.Y-r*Math.Cos(a)),new Size(r,r),0,Fraction>0.5,SweepDirection.Clockwise,true,false);}dc.DrawGeometry(null,new Pen(accent,8){StartLineCap=PenLineCap.Round,EndLineCap=PenLineCap.Round},g);}
-   Text(dc,Caption,11,muted,new Rect(25,35,w-50,29),false);
+   CaptionText(dc,Caption,muted,new Rect(25,35,w-50,29),false);
    Text(dc,Time,Time.Length>5?28:35,digits,new Rect(12,68,w-24,44),false);
-   Text(dc,Footer,11,muted,new Rect(23,116,w-46,20),false);
+   CaptionText(dc,Footer,muted,new Rect(23,116,w-46,20),false);
   }else if(Mode=="Bar"){
    var shape=new RectangleGeometry(new Rect(2,2,w-4,h-4),13,13);dc.DrawGeometry(Brush(Theme.FillColour),null,shape);
    dc.PushClip(shape);dc.DrawRectangle(track,null,new Rect(2,2,(w-4)*Math.Max(0,Math.Min(1,Fraction)),h-4));dc.Pop();dc.DrawGeometry(null,new Pen(accent,1),shape);
    Text(dc,Time,Time.Length>5?23:30,digits,new Rect(10,14,102,40),false);
-   Text(dc,Caption,11,white,new Rect(116,13,w-128,27),false);Text(dc,Footer,10,muted,new Rect(116,43,w-128,16),false);
+   CaptionText(dc,Caption,white,new Rect(116,13,w-128,27),false);CaptionText(dc,Footer,muted,new Rect(116,43,w-128,16),false);
   }else{
    Text(dc,Time,Time.Length>5?33:40,digits,new Rect(3,0,w-6,50),true);
-   Text(dc,Caption,11,white,new Rect(3,51,w-6,19),true);
+   CaptionText(dc,Caption,white,new Rect(3,51,w-6,h-54),true);
   }
  }
 }

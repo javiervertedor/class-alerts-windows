@@ -1,8 +1,8 @@
-CLASS ALERTS 1.2.0 — QUICK START
+CLASS ALERTS 1.3.0 — QUICK START
 By Francisco Javier Vertedor Postigo | CC BY-NC 4.0
 
 1. Extract this ZIP into a folder. Close any running Class Alerts timer.
-2. Open ClassAlerts-1.2.0-User.msi and follow the installer.
+2. Open ClassAlerts-1.3.0-User.msi and follow the installer.
 3. Optionally tick “Start Class Alerts when I sign in to Windows”.
 4. Click Finish to launch. Desktop and Start menu shortcuts are included.
 5. Right-click the timer > Settings to customise it.
@@ -35,3 +35,6 @@ Save applies changes immediately and keeps settings open. Close discards edits
 since the last Save. Uninstall deletes saved schedules, preferences, backups
 and imported sounds. Upgrades preserve them. Windows installer history/caches
 and downloaded packages are not erased.
+
+Names: maximum 50 characters. Long round/bar labels scroll; numeric labels
+wrap below the countdown. Older names display their first 50 characters.

@@ -1,6 +1,6 @@
 CLASS ALERTS 1.2 — CURRENT-USER INSTALLATION
 
-1. Open ClassAlerts-1.2.0-User.msi using your normal Windows account.
+1. Open ClassAlerts-1.3.0-User.msi using your normal Windows account.
 2. Read and accept the CC BY-NC 4.0 license, then install.
 3. The installer creates Start menu and desktop shortcuts for your account.
 4. On the final screen, optionally select Start Class Alerts when I sign in to Windows.

@@ -6,7 +6,7 @@ The installer adds Class Alerts to the Start menu and desktop. Click Finish to l
 
 ## Appearance
 
-Choose Round, Bar or Numeric and adjust the timer scale. Select an installed font, Bold, countdown size and class/end-time size. Chinese text uses available CJK fallback fonts. Larger text is fitted to the compact layout; long names are shortened, with the full name available in the tooltip.
+Choose Round, Bar or Numeric and adjust the timer scale. Select an installed font, Bold, countdown size and class/end-time size. Chinese text uses available CJK fallback fonts. Larger text is fitted to the compact layout; round/bar labels scroll horizontally when they exceed the available width. Numeric labels wrap below the countdown, fitting their font size to the available space. Names entered or imported must be at most 50 characters. Existing longer saved names still load, but display only their first 50 characters; shorten them before saving in settings.
 
 Choose text, fill and border colours with the colour picker or enter #RRGGBB. The border colour also controls progress and the numeric outline. Numeric view stays transparent. During a lesson, Warning colour applies to the countdown and progress once remaining time reaches the lesson's WarningMinutes setting, provided that setting is greater than zero. The warning preview checkbox only previews this appearance.
 

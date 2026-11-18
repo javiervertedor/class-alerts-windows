@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
- <Product Id="*" Name="Class Alerts" Language="1033" Version="1.2.0" Manufacturer="Francisco Javier Vertedor Postigo" UpgradeCode="D8B0B238-B9B7-4E67-89F8-8A7EF458BE85">
+ <Product Id="*" Name="Class Alerts" Language="1033" Version="1.3.0" Manufacturer="Francisco Javier Vertedor Postigo" UpgradeCode="D8B0B238-B9B7-4E67-89F8-8A7EF458BE85">
   <Package InstallerVersion="500" Compressed="yes" InstallScope="perUser" InstallPrivileges="limited" Description="Classroom countdown timer for the current user" />
   <MajorUpgrade DowngradeErrorMessage="A newer version of Class Alerts is already installed." />
   <MediaTemplate EmbedCab="yes" />

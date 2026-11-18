@@ -32,6 +32,7 @@ public static class Schedule {
  public static readonly string[] Days={"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"};
  public static string NormalizeTime(string text,bool csv){DateTime value;string[] formats=csv?new[]{"H:mm","HH:mm","H:mm:ss","HH:mm:ss"}:new[]{"H:mm","HH:mm"};if(!DateTime.TryParseExact((text??"").Trim(),formats,CultureInfo.InvariantCulture,DateTimeStyles.None,out value)||value.Second!=0)throw new InvalidDataException("Use a 24-hour time such as 09:00 or 15:45 (00:00–23:59), with no seconds.");return value.ToString("HH:mm",CultureInfo.InvariantCulture);}
  public static TimeSpan Parse(string text){DateTime t;if(!DateTime.TryParseExact(text,"HH:mm",CultureInfo.InvariantCulture,DateTimeStyles.None,out t))throw new InvalidDataException("Use 24-hour times such as 08:10 or 15:45.");return t.TimeOfDay;}
+ public static void ValidateName(string name){if(new StringInfo(name??"").LengthInTextElements>50)throw new InvalidDataException("Lesson and activity names must be no longer than 50 characters.");}
  public static void Validate(List<Lesson> lessons){
   if(lessons==null)throw new InvalidDataException("The timetable is missing.");
   foreach(var l in lessons){if(l==null||!Days.Contains(l.Day)||String.IsNullOrWhiteSpace(l.Name))throw new InvalidDataException("Every lesson needs a day and a name.");

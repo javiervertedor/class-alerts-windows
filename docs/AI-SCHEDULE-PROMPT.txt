@@ -13,6 +13,8 @@ one Monday–Sunday weekly schedule. Do not combine overlapping alternatives.
 Include teaching lessons; ask whether to include breaks, lunch or duties
 when their inclusion is unclear. Do not include unrelated personal data.
 
+Lesson names must be at most 50 characters. If a name is longer, propose a clear abbreviation and ask me to confirm it before producing the CSV.
+
 Use exactly these headers, in this order:
 Day,Name,Start,End,WarningMinutes,StartAlert,EndAlert
 

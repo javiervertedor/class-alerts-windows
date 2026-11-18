@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0 — 2026-11-18
+
+- Scroll overflowing round/bar text horizontally with pauses at each end.
+- Wrap numeric-view labels below the countdown; increase caption space and fit long labels.
+- Limit new lesson/activity names and CSV imports to 50 characters, with Unicode-safe display clipping for older names.
+- Validate long English/Chinese captions, character limits and scrolling bounds.
+
+
 ## 1.2.0 — 2026-11-18
 
 - Separate Save (persist/apply immediately, keep settings open) and Close (discard edits since the last save).
