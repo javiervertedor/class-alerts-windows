@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.1 — 2026-11-18
+
+- Add Warning minutes to Quick timer. Zero disables it; values must be non-negative and strictly smaller than the duration.
+- Play the selected warning sound once and apply the warning colour at the threshold; support decimals, pause/resume and timer restart.
+- Validate invalid values and test threshold, disabled, paused, expired and repeated-alert cases.
+
+
 ## 1.3.0 — 2026-11-18
 
 - Scroll overflowing round/bar text horizontally with pauses at each end.

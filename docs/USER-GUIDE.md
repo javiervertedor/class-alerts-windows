@@ -40,7 +40,7 @@ Select an imported row to rename or delete it. Deleting an assigned sound switch
 
 ## Quick timer
 
-Enter an activity name and duration in minutes, then Start timer. 0.1 minutes is a six-second test. Manual timers play the start/end sounds and support pause/resume. They have no scheduled pre-end warning threshold. Use lesson timetable returns to the weekly schedule.
+Enter an activity name and duration in minutes, then Start timer. 0.1 minutes is a six-second test. Manual timers play the start/end sounds and support pause/resume. Set Warning minutes to 0 to disable the warning, or a non-negative number strictly smaller than the duration. Decimal minutes are allowed. The warning plays the selected Warning sound once and uses the warning colour; pausing freezes the remaining time and defers a pending warning until resume. Use lesson timetable returns to the weekly schedule.
 
 ## Presentation controls
 

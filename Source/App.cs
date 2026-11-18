@@ -13,7 +13,7 @@ using Forms=System.Windows.Forms;
 namespace ClassAlerts {
 public class Controller : IDisposable {
  public Preferences Prefs;public Store Store;public Sounds Sounds;public Overlay Overlay;
- SettingsWindow settings;Forms.NotifyIcon tray;DispatcherTimer timer;bool scheduled=true,paused,ended;double total=300,held;DateTime deadline,previous;string manualName="Manual timer";HashSet<string> fired=new HashSet<string>();DateTime ledgerDay;bool stopping;
+ SettingsWindow settings;Forms.NotifyIcon tray;DispatcherTimer timer;bool scheduled=true,paused,ended;double total=300,held;DateTime deadline,previous;string manualName="Manual timer";ManualWarning manualWarning=new ManualWarning(5,0);HashSet<string> fired=new HashSet<string>();DateTime ledgerDay;bool stopping;
  public Controller(string data,bool preview=false){
   Store=new Store(data);Prefs=Store.Load(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"config.json"));Sounds=new Sounds(data);Sounds.PlaybackFailed+=message=>Notify("Could not play alert: "+message);Overlay=new Overlay();Overlay.Dial.Theme=Store.Clone(Prefs);Overlay.SetMode(Prefs.View,Prefs.Scale);
   if(Prefs.HasPosition){Overlay.Left=Prefs.Left;Overlay.Top=Prefs.Top;if(!VisiblePosition())Overlay.Recover();}
@@ -29,7 +29,7 @@ public class Controller : IDisposable {
  void OpenSettings(){if(settings!=null){settings.Activate();return;}settings=new SettingsWindow(this);settings.Closed+=delegate{settings=null;};settings.Show();settings.Activate();}
  public void Apply(Preferences p){Store.Check(p);Sounds.ValidateChoice(p.StartSound);Sounds.ValidateChoice(p.WarningSound);Sounds.ValidateChoice(p.EndSound);p.Left=Overlay.Left;p.Top=Overlay.Top;p.HasPosition=true;Store.Save(p);Prefs=Store.Clone(p);Overlay.Dial.Theme=Store.Clone(Prefs);Overlay.SetMode(Prefs.View,Prefs.Scale);previous=DateTime.Now;Update();}
  void Toggle(){if(Overlay.IsVisible)Overlay.Hide();else{Overlay.Show();Overlay.Raise();}}
- public void StartManual(double minutes,string name){Schedule.ValidateName(name);if(Double.IsNaN(minutes)||Double.IsInfinity(minutes)||minutes<=0||minutes>1440)throw new ArgumentException("Invalid timer duration.");scheduled=false;paused=false;ended=false;total=minutes*60;deadline=DateTime.UtcNow.AddSeconds(total);manualName=name;Overlay.Show();Play(Prefs.StartSound);Update();}
+ public void StartManual(double minutes,string name,double warningMinutes=0){Schedule.ValidateName(name);var warning=new ManualWarning(minutes,warningMinutes);manualWarning=warning;scheduled=false;paused=false;ended=false;total=minutes*60;deadline=DateTime.UtcNow.AddSeconds(total);manualName=name;Overlay.Show();Play(Prefs.StartSound);Update();}
  public string Pause(){if(scheduled)return "Timetable mode follows the clock. Start a manual timer to pause it.";if(ended)return "This timer has finished.";if(paused){deadline=DateTime.UtcNow.AddSeconds(held);paused=false;}else{held=Math.Max(0,(deadline-DateTime.UtcNow).TotalSeconds);paused=true;}Update();return paused?"Timer paused.":"Timer resumed.";}
  public void UseSchedule(){scheduled=true;paused=false;previous=DateTime.Now;Overlay.Show();Update();}
  void Play(string id){try{Sounds.Play(id);}catch(Exception ex){Notify("Could not play alert: "+ex.Message);}}
@@ -42,7 +42,7 @@ public class Controller : IDisposable {
    var slots=Schedule.Slots(Prefs.Lessons,now);var slot=slots.FirstOrDefault(s=>s.Start<=now&&s.End>now);
    if(slot!=null){Overlay.Dial.IsWarning=Schedule.InWarning(slot,now);remaining=(slot.End-now).TotalSeconds;fraction=remaining/(slot.End-slot.Start).TotalSeconds;name=slot.Lesson.Name;footer="Ends "+slot.End.ToString("HH:mm");time=Schedule.Clock(remaining);}
    else{var next=slots.FirstOrDefault(s=>s.Start>now);name=next==null?"No lessons":"Next: "+next.Lesson.Name;footer=next==null?"Right-click to set up":next.Start.ToString("ddd HH:mm");time="—";fraction=1;}
-  }else{remaining=paused?held:Math.Max(0,(deadline-DateTime.UtcNow).TotalSeconds);fraction=remaining/total;name=manualName;footer=paused?"Paused":remaining<=0?"Time is up":"Ends "+deadline.ToLocalTime().ToString("HH:mm");time=Schedule.Clock(remaining);if(remaining<=0&&!ended){ended=true;Play(Prefs.EndSound);}}
+  }else{remaining=paused?held:Math.Max(0,(deadline-DateTime.UtcNow).TotalSeconds);fraction=remaining/total;Overlay.Dial.IsWarning=manualWarning.IsWarning(remaining);if(manualWarning.TakeWarning(remaining,paused))Play(Prefs.WarningSound);name=manualName;footer=paused?"Paused":remaining<=0?"Time is up":"Ends "+deadline.ToLocalTime().ToString("HH:mm");time=Schedule.Clock(remaining);if(remaining<=0&&!ended){ended=true;Play(Prefs.EndSound);}}
   previous=now;Overlay.Dial.Caption=name;Overlay.Dial.Time=time;Overlay.Dial.Footer=footer;Overlay.Dial.Fraction=Math.Max(0,Math.Min(1,fraction));Overlay.Dial.InvalidateVisual();Overlay.ToolTip=name+" · "+footer+"\nRight-click for settings";
  }
  public void Quit(){if(stopping)return;stopping=true;try{Prefs.Left=Overlay.Left;Prefs.Top=Overlay.Top;Prefs.HasPosition=true;Store.Save(Prefs);}catch(Exception ex){MessageBox.Show("Could not save the timer position: "+ex.Message,"Class Alerts");}Dispose();Application.Current.Shutdown();}

@@ -22,6 +22,16 @@ public class Preferences {
  public double Left {get;set;} public double Top {get;set;} public bool HasPosition {get;set;}
  public Preferences(){Version=2;View="Round";Scale=1;FontName="Segoe UI";CountdownSize=35;LabelSize=11;WarningColour="#FFB454";TextColour="#FFFFFF";FillColour="#142235";BorderColour="#66E0CB";Lessons=new List<Lesson>();StartSound="Chime";WarningSound="Soft bell";EndSound="Double bell";}
 }
+public class ManualWarning {
+ readonly double seconds;bool fired;
+ public ManualWarning(double durationMinutes,double warningMinutes){
+  if(Double.IsNaN(durationMinutes)||Double.IsInfinity(durationMinutes)||durationMinutes<=0||durationMinutes>1440)throw new ArgumentException("Enter a duration greater than 0 and no more than 1440 minutes.");
+  if(Double.IsNaN(warningMinutes)||Double.IsInfinity(warningMinutes)||warningMinutes<0||warningMinutes>=durationMinutes)throw new ArgumentException("Warning minutes must be 0 (off) or greater than 0 and smaller than the duration.");
+  seconds=warningMinutes*60;
+ }
+ public bool IsWarning(double remaining){return seconds>0&&remaining>0&&remaining<=seconds;}
+ public bool TakeWarning(double remaining,bool paused){if(paused||fired||!IsWarning(remaining))return false;fired=true;return true;}
+}
 public class Slot { public Lesson Lesson; public DateTime Start,End; }
 public class DayLessonComparer : System.Collections.IComparer {
  readonly bool descending;public DayLessonComparer(bool descending){this.descending=descending;}

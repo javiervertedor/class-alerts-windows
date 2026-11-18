@@ -24,10 +24,10 @@ Download and extract the [official WiX Toolset 3.14.1 binaries](https://github.c
 
 ```powershell
 .\Build-Installer.ps1 -WixDirectory C:\Tools\wix314
-.\Installer\Verify-Msi.ps1 -Path .\dist\ClassAlerts-1.3.0-User.msi
+.\Installer\Verify-Msi.ps1 -Path .\dist\ClassAlerts-1.3.1-User.msi
 ```
 
-Output: `dist\ClassAlerts-1.3.0-User.msi`. Intermediate files: `build\installer`. Optional BuildDirectory and OutputDirectory parameters override these locations.
+Output: `dist\ClassAlerts-1.3.1-User.msi`. Intermediate files: `build\installer`. Optional BuildDirectory and OutputDirectory parameters override these locations.
 
 The MSI has perUser scope and limited privileges. It uses LocalAppDataFolder, HKCU registry entries and non-advertised per-user shortcuts. The runtime selects a separate user-data directory when installed.flag is present. Startup is opt-in, and an uninstall action clears only a startup value pointing to this executable.
 
