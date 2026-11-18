@@ -1,1 +1,2 @@
-d7a1a16b2ea56a4c510cafcdc2c1ae2a8fc5277c0de069b6e3cee3ef4b764f3e  ClassAlerts-1.1.0-User.msi
+90eb47e5c43162e188d34dfc66b9d3cb37c060de38f1a917b2d1a4fcb5dba228  ClassAlerts-1.2.0-User.msi
+f9ae0891b2fcaf582bdf1e2af2b29b906753e1302382e7ef8dcd52209f758327  ClassAlerts-1.2.0-Package.zip

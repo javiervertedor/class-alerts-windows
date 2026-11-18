@@ -32,7 +32,7 @@ public static class Tests {
   var overlay=new Overlay();foreach(var mode in new[]{"Round","Bar","Numeric","Round"}){overlay.SetMode(mode,0.7);Assert(overlay.Width==Dial.DesignSize(mode).Width*0.7,"View resizing");}overlay.Close();
   using(var controller=new Controller(Scratch(),true)){var copy=Store.Clone(controller.Prefs);copy.View="Numeric";copy.Lessons=new List<Lesson>();controller.Apply(copy);Assert(controller.Overlay.Dial.Mode=="Numeric"&&controller.Overlay.Dial.Caption=="No lessons","Applying edits updates live view");Assert(!controller.Overlay.IsVisible,"No settings or overlay shown in headless validation");}
   RenderDials(Output);
-  TestCustomisation();TestAppearanceAndDaySort();TestWarningAndBounds();TestSoundLibraryAndValidation();
+  TestCustomisation();TestAppearanceAndDaySort();TestWarningAndBounds();TestSoundLibraryAndValidation();TestSaveRefreshAndCleanup();
   File.WriteAllText(Path.Combine(Output,"test-results.txt"),"PASS: weekly recurrence; countdown formatting; start/warning/end boundaries; no repeated or stale alerts; next-week alerts; invalid time, overlap and warning rejection; adjacent lessons; empty initial timetable; persistence and backup; failed-save preservation; built-in WAVs; copied custom sounds; invalid audio/path rejection; view switching; live settings application; transparent corners in all three views.\r\nFull-screen compatibility previously confirmed by the user; new compact layouts require their visual acceptance test.");
  }
  static T Await<T>(System.Threading.Tasks.Task<T> task){if(!task.IsCompleted){var frame=new System.Windows.Threading.DispatcherFrame();task.ContinueWith(t=>Application.Current.Dispatcher.BeginInvoke(new Action(delegate{frame.Continue=false;})));System.Windows.Threading.Dispatcher.PushFrame(frame);}return task.GetAwaiter().GetResult();}
@@ -51,6 +51,20 @@ public static class Tests {
   }
   using(var controller=new Controller(Scratch(),true)){var window=new SettingsWindow(controller);var silent=(System.Windows.Controls.ListBoxItem)window.SoundLibrary.Items[0];var radios=((System.Windows.Controls.Grid)silent.Content).Children.OfType<System.Windows.Controls.RadioButton>().ToArray();foreach(var radio in radios)radio.IsChecked=true;Assert(window.Draft.StartSound=="Silent"&&window.Draft.WarningSound=="Silent"&&window.Draft.EndSound=="Silent","One sound assigned to all alert types");var chime=(System.Windows.Controls.ListBoxItem)window.SoundLibrary.Items[1];((System.Windows.Controls.Grid)chime.Content).Children.OfType<System.Windows.Controls.RadioButton>().First().IsChecked=true;Assert(window.Draft.StartSound=="Chime"&&window.Draft.WarningSound=="Silent"&&window.Draft.EndSound=="Silent"&&!radios[0].IsChecked.Value,"Radio columns are independent and exclusive");window.Close();Assert(controller.Prefs.WarningSound=="Soft bell","Cancel preserves saved sound assignments");}
   File.WriteAllText(Path.Combine(Output,"library-validation-tests.txt"),"PASS: friendly unique names; original-independent copies; persisted Chinese rename; deletion and built-in protection; corrupt import cleanup; strict times; normalization; duplicate and append conflict rejection.");
+ }
+ static void TestSaveRefreshAndCleanup(){
+  string root=Scratch();string own=Path.Combine(root,"ClassAlerts","UserData","Sounds");Directory.CreateDirectory(own);File.WriteAllText(Path.Combine(own,"sound.wav"),"test");File.WriteAllText(Path.Combine(root,"keep.txt"),"keep");Uninstall.RemoveData(root);Assert(!Directory.Exists(Path.Combine(root,"ClassAlerts"))&&File.Exists(Path.Combine(root,"keep.txt")),"Uninstall removes only app data");Uninstall.RemoveData(root);
+  using(var controller=new Controller(Scratch(),true)){
+   string input=Path.Combine(controller.Store.Root,"school_bell.wav");File.Copy(controller.Sounds.FileFor("Chime"),input);string id=controller.Sounds.Import(input);
+   var window=new SettingsWindow(controller);window.Show();window.Draft.StartSound=id;window.Draft.WarningSound=id;window.RefreshSounds(id);controller.Sounds.Rename(id,"Renamed bell");window.RefreshSounds(id);
+   foreach(var target in new[]{"Silent",id,"Double bell",id}){
+    var row=window.SoundLibrary.Items.Cast<System.Windows.Controls.ListBoxItem>().Single(x=>((SoundChoice)x.Tag).Id==target);
+    ((System.Windows.Controls.Grid)row.Content).Children.OfType<System.Windows.Controls.RadioButton>().First().IsChecked=true;
+    Assert(window.SoundLibrary.Items.Cast<System.Windows.Controls.ListBoxItem>().Count(x=>((System.Windows.Controls.Grid)x.Content).Children.OfType<System.Windows.Controls.RadioButton>().First().IsChecked==true)==1,"Exactly one start selection after rename/refresh");Assert(window.Draft.StartSound==target&&window.Draft.WarningSound==id,"Selection model agrees after refresh");
+   }
+   window.Save();Assert(window.IsVisible&&controller.Prefs.StartSound==id&&controller.Store.Load("").StartSound==id,"Save applies and persists without closing");window.Draft.EndSound=id;window.Save();Assert(controller.Prefs.EndSound==id,"Repeated Save applies changes");window.Draft.EndSound="Silent";window.Close();Assert(controller.Prefs.EndSound==id,"Close discards unsaved changes after Save");
+  }
+  File.WriteAllText(Path.Combine(Output,"save-cleanup-tests.txt"),"PASS: Save keeps settings open and applies/persists edits; repeated Save; Close discards unsaved edits; one checked sound per column after import/rename/list rebuild; isolated uninstall cleanup and idempotence.");
  }
  static void TestCustomisation(){
   string root=Scratch();string file=Path.Combine(root,"template.csv");ScheduleCsv.WriteTemplate(file);var rows=ScheduleCsv.Read(file);Assert(rows.Count==3&&rows[0].Name.Contains("计算机")&&rows[1].Day=="Tuesday","UTF-8 Chinese CSV import");

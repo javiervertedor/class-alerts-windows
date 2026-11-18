@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.0 — 2026-11-18
+
+- Separate Save (persist/apply immediately, keep settings open) and Close (discard edits since the last save).
+- Synchronize radio selections explicitly after sound import, rename and list rebuilds.
+- Full uninstall stops the current timer and removes app data, backups, imported sounds and app registry/startup entries. Upgrades skip data cleanup.
+- Include an installer ZIP with concise instructions, a timetable-conversion AI prompt and a sample CSV.
+- Regression checks cover repeated Save, Close, regenerated sound rows and scoped data deletion. Installer checks verify the cleanup action excludes upgrades. Windows-managed history/caches and downloaded packages are outside the cleanup scope.
+
+
 ## 1.1.0 — 2026-11-18
 
 - Launch Class Alerts when Finish is clicked after installation or upgrade.

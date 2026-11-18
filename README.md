@@ -4,11 +4,13 @@ An always-on-top classroom countdown timer for Windows, by **Francisco Javier Ve
 
 ## Download and install
 
-[Download Class Alerts 1.1.0 (per-user MSI)](https://github.com/javiervertedor/class-alerts-windows/raw/refs/heads/main/downloads/ClassAlerts-1.1.0-User.msi). [SHA-256 checksum](downloads/SHA256SUMS.txt). Run it using your normal Windows account. It installs for the current user, creates Start menu and desktop shortcuts, launches the app when you click Finish, and offers an optional **Start with Windows** checkbox on the final screen.
+[Download Class Alerts 1.2.0 (per-user MSI)](https://github.com/javiervertedor/class-alerts-windows/raw/refs/heads/main/downloads/ClassAlerts-1.2.0-User.msi). [SHA-256 checksum](downloads/SHA256SUMS.txt). Run it using your normal Windows account. It installs for the current user, creates Start menu and desktop shortcuts, launches the app when you click Finish, and offers an optional **Start with Windows** checkbox on the final screen.
 
 Requires Windows with **.NET Framework 4.8**. The installer does not request administrator privileges; organisational policy can still restrict MSI installation. This release is unsigned.
 
 The timetable starts empty. Right-click the timer → **Settings** to enter your own lessons or import a CSV. Download the [CSV template](Templates/schedule-template.csv) and save edited spreadsheets as **CSV UTF-8**.
+
+[Download ZIP with instructions, AI timetable-conversion prompt and sample CSV](https://github.com/javiervertedor/class-alerts-windows/raw/refs/heads/main/downloads/ClassAlerts-1.2.0-Package.zip).
 
 ## Features
 
@@ -35,11 +37,11 @@ Right-click the timer or tray icon to open settings. **Ctrl+Alt+T** shows/hides 
 
 Installed app: `%LOCALAPPDATA%\Programs\ClassAlerts`.
 Settings and copied sounds: `%LOCALAPPDATA%\ClassAlerts\UserData`.
-The portable app uses `UserData` beside its executable. Uninstall preserves personal settings and sounds. This repository and its installer contain no personal timetable, preferences or custom audio. The app does not upload schedules or audio.
+The portable app uses `UserData` beside its executable. Uninstall removes personal settings, backups and imported sounds; upgrades preserve them. This repository and its installer contain no personal timetable, preferences or custom audio. The app does not upload schedules or audio.
 
 ## Validation and limitations
 
-The application test suite covers timetable validation/recurrence, alert boundaries, settings persistence, CSV/Chinese text, audio import, weekday sorting, warning colours and screen fitting. The MSI passes Windows Installer validation with expected ICE91 notices for an intentionally per-user-only package; package structure and cabinet extraction are also checked. The author confirmed the 1.0 installer installs successfully. The 1.1 upgrade, launch-on-Finish and uninstall still need an interactive installation check.
+The application test suite covers timetable validation/recurrence, alert boundaries, settings persistence, CSV/Chinese text, audio import, weekday sorting, warning colours and screen fitting. The MSI passes Windows Installer validation with expected ICE91 notices for an intentionally per-user-only package; package structure and cabinet extraction are also checked. The author confirmed the 1.0 installer installs successfully. The 1.2 upgrade, launch-on-Finish and uninstall still need an interactive installation check.
 
 The overlay targets ordinary desktop/full-screen PowerPoint and browsers, not exclusive-rendering applications or secure Windows screens. Mixed-DPI projector setups should be checked on the actual classroom equipment.
 
@@ -50,3 +52,5 @@ The overlay targets ordinary desktop/full-screen PowerPoint and browsers, not ex
 Attribution: Francisco Javier Vertedor Postigo · Class Alerts.
 
 This C# WPF implementation develops the classroom alert concept from [javiervertedor/class_alerts](https://github.com/javiervertedor/class_alerts). The original personal schedule is not distributed. WiX is a separate build tool, not bundled with the application.
+
+Uninstall removes app-owned files, shortcuts, startup registration and saved user data. Windows-managed installer caches/history and downloaded installer/ZIP files are not erased. Close old versions before uninstalling. Upgrades keep user data.

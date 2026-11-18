@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
- <Product Id="*" Name="Class Alerts" Language="1033" Version="1.1.0" Manufacturer="Francisco Javier Vertedor Postigo" UpgradeCode="D8B0B238-B9B7-4E67-89F8-8A7EF458BE85">
+ <Product Id="*" Name="Class Alerts" Language="1033" Version="1.2.0" Manufacturer="Francisco Javier Vertedor Postigo" UpgradeCode="D8B0B238-B9B7-4E67-89F8-8A7EF458BE85">
   <Package InstallerVersion="500" Compressed="yes" InstallScope="perUser" InstallPrivileges="limited" Description="Classroom countdown timer for the current user" />
   <MajorUpgrade DowngradeErrorMessage="A newer version of Class Alerts is already installed." />
   <MediaTemplate EmbedCab="yes" />
@@ -35,8 +35,8 @@
   <Feature Id="MainFeature" Title="Class Alerts" Level="1"><ComponentRef Id="Application" /></Feature>
   <CustomAction Id="LaunchApplication" FileKey="MainExe" ExeCommand="" Execute="immediate" Return="asyncNoWait" />
   <CustomAction Id="EnableStartup" FileKey="MainExe" ExeCommand="--enable-startup" Execute="immediate" Return="check" />
-  <CustomAction Id="DisableStartup" FileKey="MainExe" ExeCommand="--disable-startup" Execute="immediate" Return="ignore" />
-  <InstallExecuteSequence><Custom Action="DisableStartup" Before="RemoveFiles">REMOVE="ALL" AND NOT UPGRADINGPRODUCTCODE</Custom></InstallExecuteSequence>
+  <CustomAction Id="CleanupUserData" FileKey="MainExe" ExeCommand="--uninstall-cleanup" Execute="immediate" Return="check" />
+  <InstallExecuteSequence><Custom Action="CleanupUserData" Before="RemoveFiles">REMOVE="ALL" AND NOT UPGRADINGPRODUCTCODE</Custom></InstallExecuteSequence>
   <UIRef Id="WixUI_Minimal" />
   <WixVariable Id="WixUILicenseRtf" Value="$(var.LicenseRtf)" />
   <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Start Class Alerts when I sign in to Windows" />

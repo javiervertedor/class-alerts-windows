@@ -50,11 +50,12 @@ public class Controller : IDisposable {
 }
 public static class Program {
  [STAThread]public static void Main(string[] args){
+  if(args.Contains("--uninstall-cleanup")){try{Uninstall.Run();}catch(Exception ex){MessageBox.Show("Class Alerts could not remove its user data. Close the app and retry uninstall.\n\n"+ex.Message,"Class Alerts");Environment.ExitCode=1;}return;}
   if(args.Contains("--enable-startup")||args.Contains("--disable-startup")){try{Startup.SetEnabled(args.Contains("--enable-startup"));}catch{Environment.ExitCode=1;}return;}
   if(args.Contains("--self-test")||args.Contains("--render-test")){try{var app=new Application{ShutdownMode=ShutdownMode.OnExplicitShutdown};if(args.Contains("--self-test"))Tests.Run();else Tests.Render();}catch(Exception ex){File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"test-error.txt"),ex.ToString());Environment.ExitCode=1;}return;}
   bool created;using(var mutex=new Mutex(true,"Local\\ClassAlerts.Desktop.v2",out created)){if(!created){MessageBox.Show("Class Alerts is already running. Right-click its timer or tray icon for settings. Ctrl+Alt+O recovers the timer.","Class Alerts");return;}
    var app=new Application{ShutdownMode=ShutdownMode.OnExplicitShutdown};Controller controller=null;
-   try{controller=new Controller(Startup.DataFolder);app.Run();}
+   try{controller=new Controller(Startup.DataFolder);using(var stop=new EventWaitHandle(false,EventResetMode.AutoReset,Uninstall.StopEvent)){var registration=ThreadPool.RegisterWaitForSingleObject(stop,delegate{app.Dispatcher.BeginInvoke(new Action(delegate{controller.Quit();}));},null,Timeout.Infinite,true);try{app.Run();}finally{registration.Unregister(null);}}}
    catch(Exception ex){MessageBox.Show("Class Alerts could not continue. Your saved settings have not been reset.\n\n"+ex.Message,"Class Alerts");if(controller!=null)controller.Dispose();}
   }
  }

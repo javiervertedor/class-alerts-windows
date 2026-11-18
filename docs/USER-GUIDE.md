@@ -28,7 +28,7 @@ Use Save CSV template or download Templates/schedule-template.csv from the repos
 
 Names may contain Chinese, commas and quotes using normal CSV quoting. Weekdays can be Monday–Sunday, 星期一–星期日 or 周一–周日. Alert values accept true/false, yes/no, 1/0 or 是/否. WarningMinutes is an integer. Excel-style 9:00 and 9:00:00 are normalized to 09:00. Save as CSV UTF-8 to preserve Chinese text.
 
-Select Replace timetable or Append to timetable, then Import CSV. The entire candidate is validated before the draft changes. Review and Save & close; Cancel keeps the previously saved schedule.
+Select Replace timetable or Append to timetable, then Import CSV. The entire candidate is validated before the draft changes. Review and Save; Close without saving keeps the previously saved schedule.
 
 ## Sounds
 
@@ -36,7 +36,7 @@ The Sounds tab lists built-in and imported audio. Select one radio button in eac
 
 Import audio accepts WAV, MP3, WMA, M4A and AAC files up to 20 MB. The app copies the file into its local library, checks that Windows can decode the copy, and gives it a readable name based on the original filename. Duplicate names receive a number. The original file can then be moved or removed. Codec support depends on Windows; unsupported/corrupt files are rejected and their temporary copies removed. PCM WAV remains the most portable choice.
 
-Select an imported row to rename or delete it. Deleting an assigned sound switches those alerts to built-in defaults. Rename, deletion and assignments apply on Save & close; Cancel discards them. New imports stay in the library even if settings are cancelled. Built-in sounds cannot be renamed or deleted. Playback failures are reported in settings and through the tray notification.
+Select an imported row to rename or delete it. Deleting an assigned sound switches those alerts to built-in defaults. Rename, deletion and assignments apply on Save; Close without saving discards them. New imports stay in the library even if settings are closed without saving. Built-in sounds cannot be renamed or deleted. Playback failures are reported in settings and through the tray notification.
 
 ## Quick timer
 
@@ -54,10 +54,12 @@ If another app owns a shortcut, use the tray menu. Closing settings leaves the t
 
 ## Start with Windows
 
-Select the optional checkbox on the installer's final screen, or use Settings → About → Windows startup and Save & close. This runs the app when this user signs in. It is not a system service and does not require administrator access.
+Select the optional checkbox on the installer's final screen, or use Settings → About → Windows startup and Save. This runs the app when this user signs in. It is not a system service and does not require administrator access.
 
 ## Saving and uninstalling
 
-Save & close applies all settings. Cancel discards unsaved edits. Settings are stored with a previous-version backup. Click-through resets on restart so the timer remains recoverable.
+Save applies all settings immediately and keeps the window open. Close exits settings without saving further edits; the timer keeps running. Close without saving discards unsaved edits. Settings are stored with a previous-version backup. Click-through resets on restart so the timer remains recoverable.
 
-Installed files are under %LOCALAPPDATA%\Programs\ClassAlerts. Your data is under %LOCALAPPDATA%\ClassAlerts\UserData. Uninstall via Windows Apps & features; your data is retained. Portable builds store UserData beside the executable and do not automatically migrate that data into an installed copy.
+Installed files are under %LOCALAPPDATA%\Programs\ClassAlerts. Your data is under %LOCALAPPDATA%\ClassAlerts\UserData. Uninstall via Windows Apps & features; your saved timetable, preferences, backups and imported sounds are deleted. Portable builds store UserData beside the executable and do not automatically migrate that data into an installed copy.
+
+Uninstall removes app-owned files, shortcuts, startup registration and saved user data. Windows-managed installer caches/history and downloaded installer/ZIP files are not erased. Close old versions before uninstalling. Upgrades keep user data.

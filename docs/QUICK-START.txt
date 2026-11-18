@@ -1,0 +1,37 @@
+CLASS ALERTS 1.2.0 — QUICK START
+By Francisco Javier Vertedor Postigo | CC BY-NC 4.0
+
+1. Extract this ZIP into a folder. Close any running Class Alerts timer.
+2. Open ClassAlerts-1.2.0-User.msi and follow the installer.
+3. Optionally tick “Start Class Alerts when I sign in to Windows”.
+4. Click Finish to launch. Desktop and Start menu shortcuts are included.
+5. Right-click the timer > Settings to customise it.
+6. Timetable > Import CSV: choose Replace or Append, select your CSV,
+   review the lessons, then Save. Replace removes existing rows
+   from the draft; Close without saving leaves the saved timetable unchanged.
+
+To convert a timetable picture or Excel file, attach it to your AI tool
+and paste the prompt in AI-SCHEDULE-PROMPT.txt. Review the result before
+importing. schedule-sample.csv is an example, not your personal timetable.
+
+Requires Windows with .NET Framework 4.8. Installs for the current user
+without requesting admin privileges; school policies may restrict installs.
+Upgrading retains your saved timetable and sounds.
+
+SIGNING STATUS: This installer and app are currently UNSIGNED. Windows may
+show “Unknown publisher” or SmartScreen warnings. The ZIP does not remove
+these warnings. Trusted signing is pending a verified signing certificate.
+
+Controls: right-click for settings; drag to move; Ctrl+Alt+T to show/hide;
+Ctrl+Alt+O to recover/unlock. Sounds accepts WAV/MP3/WMA/M4A/AAC when Windows
+can decode them, and copies imports locally. Assign Start/Warning/End in
+the Sounds list; one sound can be used for all three.
+
+Project and documentation:
+https://github.com/javiervertedor/class-alerts-windows
+License: LICENSE.txt
+
+Save applies changes immediately and keeps settings open. Close discards edits
+since the last Save. Uninstall deletes saved schedules, preferences, backups
+and imported sounds. Upgrades preserve them. Windows installer history/caches
+and downloaded packages are not erased.

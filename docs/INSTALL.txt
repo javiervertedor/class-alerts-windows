@@ -1,13 +1,13 @@
-CLASS ALERTS 1.0 — CURRENT-USER INSTALLATION
+CLASS ALERTS 1.2 — CURRENT-USER INSTALLATION
 
-1. Open ClassAlerts-1.1.0-User.msi using your normal Windows account.
+1. Open ClassAlerts-1.2.0-User.msi using your normal Windows account.
 2. Read and accept the CC BY-NC 4.0 license, then install.
 3. The installer creates Start menu and desktop shortcuts for your account.
 4. On the final screen, optionally select Start Class Alerts when I sign in to Windows.
-5. Open Class Alerts using a shortcut. Right-click the timer → Settings to add lessons.
+5. Click Finish to launch Class Alerts. Right-click the timer → Settings to add lessons.
 
 The timetable starts empty. Use Timetable → Import CSV or add lessons manually.
-You can change startup later in Settings → About → Windows startup, then Save & close.
+You can change startup later in Settings → About → Windows startup, then Save.
 
 App: %LOCALAPPDATA%\Programs\ClassAlerts
 Settings and custom sounds: %LOCALAPPDATA%\ClassAlerts\UserData
@@ -15,10 +15,12 @@ Settings and custom sounds: %LOCALAPPDATA%\ClassAlerts\UserData
 Requires .NET Framework 4.8. The MSI is authored for a standard user and does not
 request administrator privileges. School/device policy may restrict MSI installs.
 
-Uninstall through Windows Apps & features. Personal settings and sounds are kept.
+Uninstall through Windows Apps & features. Personal settings, backups and imported sounds are deleted.
 The installer does not include the developer's personal schedule or preferences.
 
 Author: Francisco Javier Vertedor Postigo
 License: Creative Commons Attribution–NonCommercial 4.0 International (CC BY-NC 4.0)
 
 Version 1.1: clicking Finish launches Class Alerts. Close the running timer before upgrading. Your saved timetable and sounds are retained.
+
+Uninstall removes app-owned files, shortcuts, startup registration and saved user data. Windows-managed installer caches/history and downloaded installer/ZIP files are not erased. Close old versions before uninstalling. Upgrades keep user data.

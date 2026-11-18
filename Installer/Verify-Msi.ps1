@@ -38,10 +38,14 @@ Assert ($files.Count -eq 7) 'Unexpected payload; check for private data'
 Assert ($propertyMap['WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT'] -like '*sign in*') 'Startup option missing'
 $actions=Rows 'SELECT `Action`,`Source`,`Target` FROM `CustomAction`' 3
 Assert (@($actions | Where-Object {$_[0] -eq 'EnableStartup' -and $_[2] -eq '--enable-startup'}).Count -eq 1) 'Startup action missing'
-Assert (@($actions | Where-Object {$_[0] -eq 'DisableStartup' -and $_[2] -eq '--disable-startup'}).Count -eq 1) 'Startup uninstall cleanup missing'
+Assert (@($actions | Where-Object {$_[0] -eq 'CleanupUserData' -and $_[2] -eq '--uninstall-cleanup'}).Count -eq 1) 'Startup uninstall cleanup missing'
 Write-Output 'PASS: per-user MSI; no elevation flag; LocalAppData installation; two user shortcuts; HKCU-only writes; seven approved payload files; opt-in startup and uninstall cleanup.'
 
 Assert (@($actions | Where-Object {$_[0] -eq 'LaunchApplication' -and $_[1] -eq 'MainExe'}).Count -eq 1) 'Launch action missing'
 $events=Rows 'SELECT `Dialog_`,`Control_`,`Event`,`Argument`,`Condition` FROM `ControlEvent`' 5
 Assert (@($events | Where-Object {$_[0] -eq 'ExitDialog' -and $_[1] -eq 'Finish' -and $_[2] -eq 'DoAction' -and $_[3] -eq 'LaunchApplication' -and $_[4] -eq 'NOT Installed'}).Count -eq 1) 'Launch after installation missing'
 Write-Output 'PASS: Finish launches the app after a new installation or major upgrade.'
+
+$sequence=Rows 'SELECT `Action`,`Condition` FROM `InstallExecuteSequence`' 2
+Assert (@($sequence | Where-Object {$_[0] -eq 'CleanupUserData' -and $_[1] -eq 'REMOVE="ALL" AND NOT UPGRADINGPRODUCTCODE'}).Count -eq 1) 'Cleanup must skip upgrades'
+Write-Output 'PASS: full-uninstall data cleanup is excluded during upgrades.'
