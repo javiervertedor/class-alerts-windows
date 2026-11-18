@@ -1,0 +1,4 @@
+Day,Name,Start,End,WarningMinutes,StartAlert,EndAlert
+Monday,计算机科学 Computer Science,09:00,09:45,5,true,true
+星期二,中文课,10:00,10:45,5,true,true
+Wednesday,Art,11:00,11:40,0,false,true

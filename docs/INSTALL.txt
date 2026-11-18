@@ -1,0 +1,22 @@
+CLASS ALERTS 1.0 — CURRENT-USER INSTALLATION
+
+1. Open ClassAlerts-1.0.0-User.msi using your normal Windows account.
+2. Read and accept the CC BY-NC 4.0 license, then install.
+3. The installer creates Start menu and desktop shortcuts for your account.
+4. On the final screen, optionally select Start Class Alerts when I sign in to Windows.
+5. Open Class Alerts using a shortcut. Right-click the timer → Settings to add lessons.
+
+The timetable starts empty. Use Timetable → Import CSV or add lessons manually.
+You can change startup later in Settings → About → Windows startup, then Save & close.
+
+App: %LOCALAPPDATA%\Programs\ClassAlerts
+Settings and custom sounds: %LOCALAPPDATA%\ClassAlerts\UserData
+
+Requires .NET Framework 4.8. The MSI is authored for a standard user and does not
+request administrator privileges. School/device policy may restrict MSI installs.
+
+Uninstall through Windows Apps & features. Personal settings and sounds are kept.
+The installer does not include the developer's personal schedule or preferences.
+
+Author: Francisco Javier Vertedor Postigo
+License: Creative Commons Attribution–NonCommercial 4.0 International (CC BY-NC 4.0)

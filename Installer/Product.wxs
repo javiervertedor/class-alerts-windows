@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+ <Product Id="*" Name="Class Alerts" Language="1033" Version="1.0.0" Manufacturer="Francisco Javier Vertedor Postigo" UpgradeCode="D8B0B238-B9B7-4E67-89F8-8A7EF458BE85">
+  <Package InstallerVersion="500" Compressed="yes" InstallScope="perUser" InstallPrivileges="limited" Description="Classroom countdown timer for the current user" />
+  <MajorUpgrade DowngradeErrorMessage="A newer version of Class Alerts is already installed." />
+  <MediaTemplate EmbedCab="yes" />
+
+  <Property Id="ARPHELPLINK" Value="https://creativecommons.org/licenses/by-nc/4.0/" />
+  <Icon Id="ClassAlertsIcon" SourceFile="$(var.Payload)\ClassAlerts.ico" />
+  <Property Id="ARPPRODUCTICON" Value="ClassAlertsIcon" />
+  <PropertyRef Id="WIX_IS_NETFRAMEWORK_48_OR_LATER_INSTALLED" />
+  <Condition Message="Class Alerts requires .NET Framework 4.8 or later. Please install that Windows component before installing this app.">Installed OR WIX_IS_NETFRAMEWORK_48_OR_LATER_INSTALLED</Condition>
+  <Directory Id="TARGETDIR" Name="SourceDir">
+   <Directory Id="LocalAppDataFolder"><Directory Id="UserPrograms" Name="Programs"><Directory Id="INSTALLFOLDER" Name="ClassAlerts">
+    <Component Id="Application" Guid="5B25F794-6EE0-4319-A8C0-A7CC26FA3C3D">
+     <RegistryValue Root="HKCU" Key="Software\FranciscoJavierVertedorPostigo\ClassAlerts" Name="Installed" Type="integer" Value="1" KeyPath="yes" />
+     <File Id="MainExe" Source="$(var.Payload)\ClassAlerts.exe">
+      <Shortcut Id="StartMenuShortcut" Directory="AppStartMenu" Name="Class Alerts" Description="Classroom countdown timer" WorkingDirectory="INSTALLFOLDER" Icon="ClassAlertsIcon" Advertise="no" />
+      <Shortcut Id="DesktopShortcut" Directory="DesktopFolder" Name="Class Alerts" Description="Classroom countdown timer" WorkingDirectory="INSTALLFOLDER" Icon="ClassAlertsIcon" Advertise="no" />
+     </File>
+     <File Id="AppConfig" Source="$(var.Payload)\ClassAlerts.exe.config" />
+     <File Id="EmptySchedule" Source="$(var.Payload)\config.json" />
+     <File Id="InstalledMarker" Source="$(var.Payload)\installed.flag" />
+     <File Id="License" Source="$(var.Payload)\LICENSE.txt" />
+     <File Id="CsvTemplate" Source="$(var.Payload)\ClassAlerts-schedule-template.csv" />
+     <File Id="ApplicationIcon" Source="$(var.Payload)\ClassAlerts.ico" />
+     <RemoveFolder Id="RemoveAppMenu" Directory="AppStartMenu" On="uninstall" />
+     <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
+     <RemoveFolder Id="RemoveEmptyUserPrograms" Directory="UserPrograms" On="uninstall" />
+    </Component>
+   </Directory></Directory></Directory>
+   <Directory Id="ProgramMenuFolder"><Directory Id="AppStartMenu" Name="Class Alerts" /></Directory>
+   <Directory Id="DesktopFolder" />
+  </Directory>
+  <Feature Id="MainFeature" Title="Class Alerts" Level="1"><ComponentRef Id="Application" /></Feature>
+  <CustomAction Id="EnableStartup" FileKey="MainExe" ExeCommand="--enable-startup" Execute="immediate" Return="check" />
+  <CustomAction Id="DisableStartup" FileKey="MainExe" ExeCommand="--disable-startup" Execute="immediate" Return="ignore" />
+  <InstallExecuteSequence><Custom Action="DisableStartup" Before="RemoveFiles">REMOVE="ALL" AND NOT UPGRADINGPRODUCTCODE</Custom></InstallExecuteSequence>
+  <UIRef Id="WixUI_Minimal" />
+  <WixVariable Id="WixUILicenseRtf" Value="$(var.LicenseRtf)" />
+  <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Start Class Alerts when I sign in to Windows" />
+  <UI><Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="EnableStartup" Order="1">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed</Publish></UI>
+ </Product>
+</Wix>
+
+

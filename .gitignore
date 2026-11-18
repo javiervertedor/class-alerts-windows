@@ -1,0 +1,14 @@
+App/
+build/
+dist/
+work/
+**/bin/
+**/obj/
+**/UserData/
+*.user
+*.suo
+*.wixobj
+*.wixpdb
+*.msi
+*.zip
+.vs/
