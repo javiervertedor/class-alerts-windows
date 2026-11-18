@@ -1,0 +1,1 @@
+d7a1a16b2ea56a4c510cafcdc2c1ae2a8fc5277c0de069b6e3cee3ef4b764f3e  ClassAlerts-1.1.0-User.msi

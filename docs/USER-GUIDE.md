@@ -2,7 +2,7 @@
 
 ## First run
 
-The installer adds Class Alerts to the Start menu and desktop. Launch it and right-click the floating timer → Settings. An empty timetable displays No lessons. Settings do not open automatically.
+The installer adds Class Alerts to the Start menu and desktop. Click Finish to launch it, then right-click the floating timer → Settings. An empty timetable displays No lessons. Settings do not open automatically.
 
 ## Appearance
 
@@ -14,7 +14,7 @@ Switching views or changing size moves the timer inward if necessary to keep it 
 
 ## Timetable
 
-Double-click cells to edit day, class name, start/end times and warning minutes. Use 24-hour HH:mm times. Add, duplicate or remove lessons with the toolbar. Start/end checkboxes control those sound alerts; WarningMinutes = 0 disables the pre-end warning.
+Double-click cells to edit day, class name, start/end times and warning minutes. Use 24-hour HH:mm times. Typed H:mm values are normalized (9:05 → 09:05). Invalid time cells stay in edit mode with a correction message. Conflicts are reported when a row is committed and block saving; adjacent lessons remain valid. Add, duplicate or remove lessons with the toolbar. Start/end checkboxes control those sound alerts; WarningMinutes = 0 disables the pre-end warning.
 
 The Day header toggles Monday–Sunday or Sunday–Monday, keeping start times earliest-first within each day. Missing names, invalid times, overlaps and warnings outside a lesson are rejected when saving. Adjacent lessons are allowed; at a shared end/start boundary the start sound takes priority. Stale sounds more than 90 seconds old are not replayed after sleep.
 
@@ -32,9 +32,11 @@ Select Replace timetable or Append to timetable, then Import CSV. The entire can
 
 ## Sounds
 
-Select Chime, Soft bell, Double bell, Silent or custom audio separately for start, warning and end. Preview and Stop preview let you check the selected sound. Save before testing a new sound choice.
+The Sounds tab lists built-in and imported audio. Select one radio button in each of the Start, Warning and End columns. The same sound may be assigned to all three. Select Silent to disable a sound category. Preview plays that row; Stop preview ends playback.
 
-Import WAV copies audio locally. Supported: uncompressed PCM WAV, mono/stereo, 8-bit or 16-bit, 8–192 kHz, up to 20 MB. MP3 is not supported. No online upload occurs. Imported audio remains in the library if settings are cancelled.
+Import audio accepts WAV, MP3, WMA, M4A and AAC files up to 20 MB. The app copies the file into its local library, checks that Windows can decode the copy, and gives it a readable name based on the original filename. Duplicate names receive a number. The original file can then be moved or removed. Codec support depends on Windows; unsupported/corrupt files are rejected and their temporary copies removed. PCM WAV remains the most portable choice.
+
+Select an imported row to rename or delete it. Deleting an assigned sound switches those alerts to built-in defaults. Rename, deletion and assignments apply on Save & close; Cancel discards them. New imports stay in the library even if settings are cancelled. Built-in sounds cannot be renamed or deleted. Playback failures are reported in settings and through the tray notification.
 
 ## Quick timer
 

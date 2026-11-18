@@ -4,9 +4,9 @@ An always-on-top classroom countdown timer for Windows, by **Francisco Javier Ve
 
 ## Download and install
 
-[Download the per-user MSI](https://github.com/javiervertedor/class-alerts-windows/releases/latest) from Releases. Run it using your normal Windows account. It installs for the current user, creates Start menu and desktop shortcuts, and offers an optional **Start with Windows** checkbox on the final screen.
+[Download Class Alerts 1.1.0 (per-user MSI)](https://github.com/javiervertedor/class-alerts-windows/raw/refs/heads/main/downloads/ClassAlerts-1.1.0-User.msi). [SHA-256 checksum](downloads/SHA256SUMS.txt). Run it using your normal Windows account. It installs for the current user, creates Start menu and desktop shortcuts, launches the app when you click Finish, and offers an optional **Start with Windows** checkbox on the final screen.
 
-Requires Windows with **.NET Framework 4.8**. The installer does not request administrator privileges; organisational policy can still restrict MSI installation. This initial release is unsigned.
+Requires Windows with **.NET Framework 4.8**. The installer does not request administrator privileges; organisational policy can still restrict MSI installation. This release is unsigned.
 
 The timetable starts empty. Right-click the timer → **Settings** to enter your own lessons or import a CSV. Download the [CSV template](Templates/schedule-template.csv) and save edited spreadsheets as **CSV UTF-8**.
 
@@ -19,9 +19,11 @@ The timetable starts empty. Right-click the timer → **Settings** to enter your
 - Chinese and English lesson names, with CJK font fallback.
 - Weekly timetable editor; chronological weekday and start-time sorting.
 - CSV import with replace/append modes and overlap validation.
-- Start, pre-end and end alerts; built-in sounds and custom PCM WAV import.
+- Start, pre-end and end alerts; built-in sounds and a sound library with WAV/MP3/WMA/M4A/AAC import, rename/delete, and separate Start/Warning/End assignments.
 - Named manual countdowns with pause/resume.
 - Per-user installation, shortcuts and optional Windows sign-in startup.
+
+Audio is checked using Windows media support; codec availability can vary. Files are copied into the local library, and rejected imports leave no library copy.
 
 ## Quick controls
 
@@ -37,7 +39,7 @@ The portable app uses `UserData` beside its executable. Uninstall preserves pers
 
 ## Validation and limitations
 
-The application test suite covers timetable validation/recurrence, alert boundaries, settings persistence, CSV/Chinese text, audio import, weekday sorting, warning colours and screen fitting. The MSI passes Windows Installer validation with expected ICE91 notices for an intentionally per-user-only package; package structure and cabinet extraction are also checked. End-to-end installation/uninstallation under a separate standard-user account has not been tested.
+The application test suite covers timetable validation/recurrence, alert boundaries, settings persistence, CSV/Chinese text, audio import, weekday sorting, warning colours and screen fitting. The MSI passes Windows Installer validation with expected ICE91 notices for an intentionally per-user-only package; package structure and cabinet extraction are also checked. The author confirmed the 1.0 installer installs successfully. The 1.1 upgrade, launch-on-Finish and uninstall still need an interactive installation check.
 
 The overlay targets ordinary desktop/full-screen PowerPoint and browsers, not exclusive-rendering applications or secure Windows screens. Mixed-DPI projector setups should be checked on the actual classroom equipment.
 

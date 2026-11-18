@@ -15,7 +15,7 @@ public class Controller : IDisposable {
  public Preferences Prefs;public Store Store;public Sounds Sounds;public Overlay Overlay;
  SettingsWindow settings;Forms.NotifyIcon tray;DispatcherTimer timer;bool scheduled=true,paused,ended;double total=300,held;DateTime deadline,previous;string manualName="Manual timer";HashSet<string> fired=new HashSet<string>();DateTime ledgerDay;bool stopping;
  public Controller(string data,bool preview=false){
-  Store=new Store(data);Prefs=Store.Load(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"config.json"));Sounds=new Sounds(data);Overlay=new Overlay();Overlay.Dial.Theme=Store.Clone(Prefs);Overlay.SetMode(Prefs.View,Prefs.Scale);
+  Store=new Store(data);Prefs=Store.Load(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"config.json"));Sounds=new Sounds(data);Sounds.PlaybackFailed+=message=>Notify("Could not play alert: "+message);Overlay=new Overlay();Overlay.Dial.Theme=Store.Clone(Prefs);Overlay.SetMode(Prefs.View,Prefs.Scale);
   if(Prefs.HasPosition){Overlay.Left=Prefs.Left;Overlay.Top=Prefs.Top;if(!VisiblePosition())Overlay.Recover();}
   Overlay.ToggleRequested+=Toggle;Overlay.Recovered+=delegate{Overlay.Recover();};
   Overlay.ContextMenu=MakeMenu();if(!preview)MakeTray();previous=DateTime.Now;ledgerDay=previous.Date;

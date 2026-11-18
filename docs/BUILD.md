@@ -24,10 +24,10 @@ Download and extract the [official WiX Toolset 3.14.1 binaries](https://github.c
 
 ```powershell
 .\Build-Installer.ps1 -WixDirectory C:\Tools\wix314
-.\Installer\Verify-Msi.ps1 -Path .\dist\ClassAlerts-1.0.0-User.msi
+.\Installer\Verify-Msi.ps1 -Path .\dist\ClassAlerts-1.1.0-User.msi
 ```
 
-Output: `dist\ClassAlerts-1.0.0-User.msi`. Intermediate files: `build\installer`. Optional BuildDirectory and OutputDirectory parameters override these locations.
+Output: `dist\ClassAlerts-1.1.0-User.msi`. Intermediate files: `build\installer`. Optional BuildDirectory and OutputDirectory parameters override these locations.
 
 The MSI has perUser scope and limited privileges. It uses LocalAppDataFolder, HKCU registry entries and non-advertised per-user shortcuts. The runtime selects a separate user-data directory when installed.flag is present. Startup is opt-in, and an uninstall action clears only a startup value pointing to this executable.
 
@@ -38,3 +38,5 @@ Update Product.wxs Product/@Version and AssemblyInfo.cs together for a new relea
 ## Do not publish personal data
 
 Do not commit App/UserData, actual timetables, custom sounds, build logs with user paths, or local test output. Only the generic CSV template and empty source config belong in the repository. Upload installers as release assets, not source files.
+
+Optional audio integration tests: set CLASSALERTS_AUDIO_FIXTURES to a folder containing tone.wav, tone.mp3, tone.wma, tone.m4a and tone.aac before running --self-test. These should be short audio-only clips; they are copied and decoded without playing. Tests use a scratch data folder and do not change installed preferences.

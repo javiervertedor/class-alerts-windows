@@ -12,3 +12,5 @@ work/
 *.msi
 *.zip
 .vs/
+
+!downloads/*.msi

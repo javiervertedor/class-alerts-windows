@@ -1,6 +1,6 @@
 CLASS ALERTS 1.0 — CURRENT-USER INSTALLATION
 
-1. Open ClassAlerts-1.0.0-User.msi using your normal Windows account.
+1. Open ClassAlerts-1.1.0-User.msi using your normal Windows account.
 2. Read and accept the CC BY-NC 4.0 license, then install.
 3. The installer creates Start menu and desktop shortcuts for your account.
 4. On the final screen, optionally select Start Class Alerts when I sign in to Windows.
@@ -20,3 +20,5 @@ The installer does not include the developer's personal schedule or preferences.
 
 Author: Francisco Javier Vertedor Postigo
 License: Creative Commons Attribution–NonCommercial 4.0 International (CC BY-NC 4.0)
+
+Version 1.1: clicking Finish launches Class Alerts. Close the running timer before upgrading. Your saved timetable and sounds are retained.
