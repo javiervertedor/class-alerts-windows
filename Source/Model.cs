@@ -63,6 +63,15 @@ public static class Schedule {
  public static bool InWarning(Slot slot,DateTime now){return slot!=null&&slot.Lesson.WarningMinutes>0&&now>=slot.Start&&now<slot.End&&(slot.End-now).TotalSeconds<=slot.Lesson.WarningMinutes*60;}
  public static string Clock(double seconds){int n=(int)Math.Ceiling(Math.Max(0,seconds));return n>=3600?String.Format("{0}:{1:00}:{2:00}",n/3600,n/60%60,n%60):String.Format("{0:00}:{1:00}",n/60,n%60);}
 }
+// Parsed once per calendar day or timetable edit, rather than on every UI tick.
+public sealed class SchedulePlan {
+ public readonly DateTime Date;public readonly List<Slot> Slots;readonly List<Alert> alerts=new List<Alert>();
+ public SchedulePlan(List<Lesson> lessons,DateTime now){Date=now.Date;Slots=Schedule.Slots(lessons,now);foreach(var slot in Slots){if(slot.Lesson.StartAlert)Add(slot,"start",slot.Start);if(slot.Lesson.WarningMinutes>0)Add(slot,"warning",slot.End.AddMinutes(-slot.Lesson.WarningMinutes));if(slot.Lesson.EndAlert)Add(slot,"end",slot.End);}alerts=alerts.OrderBy(a=>a.At).ThenBy(a=>a.Kind=="start"?1:0).ToList();}
+ void Add(Slot slot,string kind,DateTime at){alerts.Add(new Alert{At=at,Kind=kind,Key=slot.Start.ToString("O")+"|"+slot.Lesson.Name+"|"+kind});}
+ public IEnumerable<Alert> Due(DateTime previous,DateTime now){if(now<=previous)yield break;foreach(var alert in alerts){if(alert.At>now)yield break;if(alert.At>previous&&(now-alert.At).TotalSeconds<=90)yield return alert;}}
+ public Slot Current(DateTime now){foreach(var slot in Slots){if(slot.Start>now)break;if(slot.End>now)return slot;}return null;}
+ public Slot Next(DateTime now){foreach(var slot in Slots)if(slot.Start>now)return slot;return null;}
+}
 public class Store {
  public readonly string Root; public string SettingsPath {get{return Path.Combine(Root,"settings.json");}}
  static JavaScriptSerializer Json(){return new JavaScriptSerializer();}

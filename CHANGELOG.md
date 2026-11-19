@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.4.0 — 2026-11-19
+
+- Use software rendering for the small transparent timer to avoid the graphics-device memory overhead observed on the test machine.
+- Reuse a typeface, bounded text layouts, frozen text drawings and frozen brushes instead of recreating them on each animation frame.
+- Animate scrolling at up to 30 fps only while visible; stop its timer when hidden or unloaded.
+- Cache the parsed weekly schedule and alerts per day; invalidate on settings changes.
+- Skip unchanged repaints and tooltip assignments; slow idle/paused polling and reduce redundant topmost calls while still reacting to foreground changes.
+- Preserve warning thresholds, sound choices, pause/resume, countdown accuracy, Chinese text, screen fitting and full-screen overlay behavior in the code.
+- Add cache-lifetime and alert-parity tests, plus before/after resource measurements. Full-screen acceptance and long-running classroom monitoring remain user checks.
+
+
 ## 1.3.1 — 2026-11-18
 
 - Add Warning minutes to Quick timer. Zero disables it; values must be non-negative and strictly smaller than the duration.

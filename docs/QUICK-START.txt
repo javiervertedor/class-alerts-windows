@@ -1,8 +1,8 @@
-CLASS ALERTS 1.3.1 — QUICK START
+CLASS ALERTS 1.4.0 — QUICK START
 By Francisco Javier Vertedor Postigo | CC BY-NC 4.0
 
 1. Extract this ZIP into a folder. Close any running Class Alerts timer.
-2. Open ClassAlerts-1.3.1-User.msi and follow the installer.
+2. Open ClassAlerts-1.4.0-User.msi and follow the installer.
 3. Optionally tick “Start Class Alerts when I sign in to Windows”.
 4. Click Finish to launch. Desktop and Start menu shortcuts are included.
 5. Right-click the timer > Settings to customise it.
@@ -42,3 +42,7 @@ wrap below the countdown. Older names display their first 50 characters.
 Quick timer: Warning minutes = 0 disables the warning. Otherwise enter a
 number smaller than the duration. The selected Warning sound plays once
 and the timer uses the warning colour. Decimal minutes are supported.
+
+Version 1.4 reduces resource use through cached text/schedules and software
+rendering. Quit the old running timer before upgrading to release its memory.
+Upgrade using the MSI; do not uninstall first if you want to keep settings.

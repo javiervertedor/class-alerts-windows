@@ -4,13 +4,13 @@ An always-on-top classroom countdown timer for Windows, by **Francisco Javier Ve
 
 ## Download and install
 
-[Download Class Alerts 1.3.1 (per-user MSI)](https://github.com/javiervertedor/class-alerts-windows/raw/refs/heads/main/downloads/ClassAlerts-1.3.1-User.msi). [SHA-256 checksum](downloads/SHA256SUMS.txt). Run it using your normal Windows account. It installs for the current user, creates Start menu and desktop shortcuts, launches the app when you click Finish, and offers an optional **Start with Windows** checkbox on the final screen.
+[Download Class Alerts 1.4.0 (per-user MSI)](https://github.com/javiervertedor/class-alerts-windows/raw/refs/heads/main/downloads/ClassAlerts-1.4.0-User.msi). [SHA-256 checksum](downloads/SHA256SUMS.txt). Run it using your normal Windows account. It installs for the current user, creates Start menu and desktop shortcuts, launches the app when you click Finish, and offers an optional **Start with Windows** checkbox on the final screen.
 
 Requires Windows with **.NET Framework 4.8**. The installer does not request administrator privileges; organisational policy can still restrict MSI installation. This release is unsigned.
 
 The timetable starts empty. Right-click the timer → **Settings** to enter your own lessons or import a CSV. Download the [CSV template](Templates/schedule-template.csv) and save edited spreadsheets as **CSV UTF-8**.
 
-[Download ZIP with instructions, AI timetable-conversion prompt and sample CSV](https://github.com/javiervertedor/class-alerts-windows/raw/refs/heads/main/downloads/ClassAlerts-1.3.1-Package.zip).
+[Download ZIP with instructions, AI timetable-conversion prompt and sample CSV](https://github.com/javiervertedor/class-alerts-windows/raw/refs/heads/main/downloads/ClassAlerts-1.4.0-Package.zip).
 
 ## Features
 
@@ -54,3 +54,7 @@ Attribution: Francisco Javier Vertedor Postigo · Class Alerts.
 This C# WPF implementation develops the classroom alert concept from [javiervertedor/class_alerts](https://github.com/javiervertedor/class_alerts). The original personal schedule is not distributed. WiX is a separate build tool, not bundled with the application.
 
 Uninstall removes app-owned files, shortcuts, startup registration and saved user data. Windows-managed installer caches/history and downloaded installer/ZIP files are not erased. Close old versions before uninstalling. Upgrades keep user data.
+
+## Resource use
+
+Version 1.4 uses software rendering, bounded text caches and a cached timetable to reduce RAM and CPU use. It requires no Windows service or scheduled task. See [performance measurements](docs/PERFORMANCE.md) for the test method and limits.

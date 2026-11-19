@@ -13,13 +13,13 @@ using Forms=System.Windows.Forms;
 namespace ClassAlerts {
 public class Controller : IDisposable {
  public Preferences Prefs;public Store Store;public Sounds Sounds;public Overlay Overlay;
- SettingsWindow settings;Forms.NotifyIcon tray;DispatcherTimer timer;bool scheduled=true,paused,ended;double total=300,held;DateTime deadline,previous;string manualName="Manual timer";ManualWarning manualWarning=new ManualWarning(5,0);HashSet<string> fired=new HashSet<string>();DateTime ledgerDay;bool stopping;
+ SettingsWindow settings;Forms.NotifyIcon tray;DispatcherTimer timer;bool scheduled=true,paused,ended;double total=300,held;DateTime deadline,previous;string manualName="Manual timer";ManualWarning manualWarning=new ManualWarning(5,0);HashSet<string> fired=new HashSet<string>();DateTime ledgerDay;bool stopping;SchedulePlan plan;double nextTick=200;
  public Controller(string data,bool preview=false){
   Store=new Store(data);Prefs=Store.Load(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"config.json"));Sounds=new Sounds(data);Sounds.PlaybackFailed+=message=>Notify("Could not play alert: "+message);Overlay=new Overlay();Overlay.Dial.Theme=Store.Clone(Prefs);Overlay.SetMode(Prefs.View,Prefs.Scale);
   if(Prefs.HasPosition){Overlay.Left=Prefs.Left;Overlay.Top=Prefs.Top;if(!VisiblePosition())Overlay.Recover();}
   Overlay.ToggleRequested+=Toggle;Overlay.Recovered+=delegate{Overlay.Recover();};
   Overlay.ContextMenu=MakeMenu();if(!preview)MakeTray();previous=DateTime.Now;ledgerDay=previous.Date;
-  if(!preview)Overlay.Show();Update();timer=new DispatcherTimer{Interval=TimeSpan.FromMilliseconds(200)};timer.Tick+=delegate{Update();if(settings==null)Overlay.Raise();};if(!preview)timer.Start();
+  if(!preview)Overlay.Show();Update();timer=new DispatcherTimer{Interval=TimeSpan.FromMilliseconds(nextTick)};timer.Tick+=delegate{Update();if(settings==null)Overlay.Raise();};if(!preview)timer.Start();
  }
  bool VisiblePosition(){var area=new Rect(SystemParameters.VirtualScreenLeft,SystemParameters.VirtualScreenTop,SystemParameters.VirtualScreenWidth,SystemParameters.VirtualScreenHeight);return area.IntersectsWith(new Rect(Overlay.Left,Overlay.Top,Overlay.Width,Overlay.Height));}
  MenuItem Item(string label,Action a){var item=new MenuItem{Header=label};item.Click+=delegate{a();};return item;}
@@ -27,29 +27,31 @@ public class Controller : IDisposable {
  void MakeTray(){tray=new Forms.NotifyIcon{Text="Class Alerts — right-click for settings",Icon=System.Drawing.Icon.ExtractAssociatedIcon(System.Reflection.Assembly.GetExecutingAssembly().Location),Visible=true};var menu=new Forms.ContextMenuStrip();menu.Items.Add("Settings…",null,delegate{OpenSettings();});menu.Items.Add("Show / hide timer",null,delegate{Toggle();});menu.Items.Add("Recover & unlock timer",null,delegate{Overlay.Recover();});menu.Items.Add("Quit Class Alerts",null,delegate{Quit();});tray.ContextMenuStrip=menu;}
  void Notify(string text){if(tray!=null){tray.BalloonTipTitle="Class Alerts";tray.BalloonTipText=text;tray.ShowBalloonTip(5000);}}
  void OpenSettings(){if(settings!=null){settings.Activate();return;}settings=new SettingsWindow(this);settings.Closed+=delegate{settings=null;};settings.Show();settings.Activate();}
- public void Apply(Preferences p){Store.Check(p);Sounds.ValidateChoice(p.StartSound);Sounds.ValidateChoice(p.WarningSound);Sounds.ValidateChoice(p.EndSound);p.Left=Overlay.Left;p.Top=Overlay.Top;p.HasPosition=true;Store.Save(p);Prefs=Store.Clone(p);Overlay.Dial.Theme=Store.Clone(Prefs);Overlay.SetMode(Prefs.View,Prefs.Scale);previous=DateTime.Now;Update();}
+ public void Apply(Preferences p){Store.Check(p);Sounds.ValidateChoice(p.StartSound);Sounds.ValidateChoice(p.WarningSound);Sounds.ValidateChoice(p.EndSound);p.Left=Overlay.Left;p.Top=Overlay.Top;p.HasPosition=true;Store.Save(p);Prefs=Store.Clone(p);plan=null;Overlay.Dial.Theme=Store.Clone(Prefs);Overlay.SetMode(Prefs.View,Prefs.Scale);previous=DateTime.Now;Update();}
  void Toggle(){if(Overlay.IsVisible)Overlay.Hide();else{Overlay.Show();Overlay.Raise();}}
  public void StartManual(double minutes,string name,double warningMinutes=0){Schedule.ValidateName(name);var warning=new ManualWarning(minutes,warningMinutes);manualWarning=warning;scheduled=false;paused=false;ended=false;total=minutes*60;deadline=DateTime.UtcNow.AddSeconds(total);manualName=name;Overlay.Show();Play(Prefs.StartSound);Update();}
  public string Pause(){if(scheduled)return "Timetable mode follows the clock. Start a manual timer to pause it.";if(ended)return "This timer has finished.";if(paused){deadline=DateTime.UtcNow.AddSeconds(held);paused=false;}else{held=Math.Max(0,(deadline-DateTime.UtcNow).TotalSeconds);paused=true;}Update();return paused?"Timer paused.":"Timer resumed.";}
  public void UseSchedule(){scheduled=true;paused=false;previous=DateTime.Now;Overlay.Show();Update();}
  void Play(string id){try{Sounds.Play(id);}catch(Exception ex){Notify("Could not play alert: "+ex.Message);}}
- void Update(){DateTime now=DateTime.Now;Overlay.Dial.IsWarning=false;double remaining=0,fraction=0;string name,footer,time;
+ void Update(){DateTime now=DateTime.Now;bool wasWarning=Overlay.Dial.IsWarning;Overlay.Dial.IsWarning=false;double remaining=0,fraction=0;string name,footer,time;nextTick=200;
   if(scheduled){
    if(ledgerDay!=now.Date){fired.Clear();ledgerDay=now.Date;}
-   var due=Schedule.Due(Prefs.Lessons,previous,now).Where(a=>fired.Add(a.Key)).ToList();
+   if(plan==null||plan.Date!=now.Date)plan=new SchedulePlan(Prefs.Lessons,now);Alert due=null;foreach(var alert in plan.Due(previous,now))if(fired.Add(alert.Key))due=alert;
    // One sound at a time: a starting lesson takes priority at a shared end/start boundary.
-   if(due.Count>0){var a=due.Last();Play(a.Kind=="start"?Prefs.StartSound:a.Kind=="warning"?Prefs.WarningSound:Prefs.EndSound);}
-   var slots=Schedule.Slots(Prefs.Lessons,now);var slot=slots.FirstOrDefault(s=>s.Start<=now&&s.End>now);
+   if(due!=null){var a=due;Play(a.Kind=="start"?Prefs.StartSound:a.Kind=="warning"?Prefs.WarningSound:Prefs.EndSound);}
+   var slot=plan.Current(now);
    if(slot!=null){Overlay.Dial.IsWarning=Schedule.InWarning(slot,now);remaining=(slot.End-now).TotalSeconds;fraction=remaining/(slot.End-slot.Start).TotalSeconds;name=slot.Lesson.Name;footer="Ends "+slot.End.ToString("HH:mm");time=Schedule.Clock(remaining);}
-   else{var next=slots.FirstOrDefault(s=>s.Start>now);name=next==null?"No lessons":"Next: "+next.Lesson.Name;footer=next==null?"Right-click to set up":next.Start.ToString("ddd HH:mm");time="—";fraction=1;}
-  }else{remaining=paused?held:Math.Max(0,(deadline-DateTime.UtcNow).TotalSeconds);fraction=remaining/total;Overlay.Dial.IsWarning=manualWarning.IsWarning(remaining);if(manualWarning.TakeWarning(remaining,paused))Play(Prefs.WarningSound);name=manualName;footer=paused?"Paused":remaining<=0?"Time is up":"Ends "+deadline.ToLocalTime().ToString("HH:mm");time=Schedule.Clock(remaining);if(remaining<=0&&!ended){ended=true;Play(Prefs.EndSound);}}
-  previous=now;Overlay.Dial.Caption=name;Overlay.Dial.Time=time;Overlay.Dial.Footer=footer;Overlay.Dial.Fraction=Math.Max(0,Math.Min(1,fraction));Overlay.Dial.InvalidateVisual();Overlay.ToolTip=name+" · "+footer+"\nRight-click for settings";
+   else{var next=plan.Next(now);nextTick=next==null?1000:Math.Max(20,Math.Min(1000,(next.Start-now).TotalMilliseconds));name=next==null?"No lessons":"Next: "+next.Lesson.Name;footer=next==null?"Right-click to set up":next.Start.ToString("ddd HH:mm");time="—";fraction=1;}
+  }else{remaining=paused?held:Math.Max(0,(deadline-DateTime.UtcNow).TotalSeconds);if(paused||remaining<=0)nextTick=1000;fraction=remaining/total;Overlay.Dial.IsWarning=manualWarning.IsWarning(remaining);if(manualWarning.TakeWarning(remaining,paused))Play(Prefs.WarningSound);name=manualName;footer=paused?"Paused":remaining<=0?"Time is up":"Ends "+deadline.ToLocalTime().ToString("HH:mm");time=Schedule.Clock(remaining);if(remaining<=0&&!ended){ended=true;Play(Prefs.EndSound);}}
+  if(timer!=null)timer.Interval=TimeSpan.FromMilliseconds(nextTick);previous=now;fraction=Math.Max(0,Math.Min(1,fraction));bool labelsChanged=Overlay.Dial.Caption!=name||Overlay.Dial.Footer!=footer;bool changed=labelsChanged||Overlay.Dial.Time!=time||wasWarning!=Overlay.Dial.IsWarning||(Overlay.Dial.Mode!="Numeric"&&Math.Abs(Overlay.Dial.Fraction-fraction)>=0.0005);Overlay.Dial.Caption=name;Overlay.Dial.Time=time;Overlay.Dial.Footer=footer;if(changed){Overlay.Dial.Fraction=fraction;if(Overlay.IsVisible)Overlay.Dial.InvalidateVisual();}if(labelsChanged)Overlay.ToolTip=name+" · "+footer+"\nRight-click for settings";
  }
  public void Quit(){if(stopping)return;stopping=true;try{Prefs.Left=Overlay.Left;Prefs.Top=Overlay.Top;Prefs.HasPosition=true;Store.Save(Prefs);}catch(Exception ex){MessageBox.Show("Could not save the timer position: "+ex.Message,"Class Alerts");}Dispose();Application.Current.Shutdown();}
  public void Dispose(){if(timer!=null)timer.Stop();if(settings!=null)settings.Close();if(tray!=null){tray.Visible=false;tray.Dispose();tray=null;}Sounds.Dispose();Overlay.Close();}
 }
 public static class Program {
  [STAThread]public static void Main(string[] args){
+  // The tiny transparent overlay costs less to rasterize than maintaining a GPU device.
+  RenderOptions.ProcessRenderMode=System.Windows.Interop.RenderMode.SoftwareOnly;
   if(args.Contains("--uninstall-cleanup")){try{Uninstall.Run();}catch(Exception ex){MessageBox.Show("Class Alerts could not remove its user data. Close the app and retry uninstall.\n\n"+ex.Message,"Class Alerts");Environment.ExitCode=1;}return;}
   if(args.Contains("--enable-startup")||args.Contains("--disable-startup")){try{Startup.SetEnabled(args.Contains("--enable-startup"));}catch{Environment.ExitCode=1;}return;}
   if(args.Contains("--self-test")||args.Contains("--render-test")){try{var app=new Application{ShutdownMode=ShutdownMode.OnExplicitShutdown};if(args.Contains("--self-test"))Tests.Run();else Tests.Render();}catch(Exception ex){File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"test-error.txt"),ex.ToString());Environment.ExitCode=1;}return;}
